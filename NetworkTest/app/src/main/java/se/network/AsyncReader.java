@@ -9,15 +9,23 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import se.misc.Action;
 import se.misc.Disposable;
 
 public class AsyncReader implements Runnable, Disposable {
     private BufferedReader reader;
     private boolean shouldRun = true;
+    private Action<String> messageReceivedEvent;
 
     public AsyncReader(InputStream inputStream) {
         reader =  new BufferedReader(new InputStreamReader(inputStream));
     }
+
+    public AsyncReader(InputStream inputStream, Action<String> messageReceivedEvent) {
+        this(inputStream);
+        this.messageReceivedEvent = messageReceivedEvent;
+    }
+
     public void setShouldRun(boolean shouldRun) {
         this.shouldRun = shouldRun;
     }
@@ -26,24 +34,17 @@ public class AsyncReader implements Runnable, Disposable {
     public void run() {
         try {
             while(shouldRun) {
-                Log.d("Networking", "Fetching data");
                 String data = reader.readLine();
-                Log.d("Networking", data);
-                Thread.sleep(100);
+                if(data != null) {
+                    Log.d("Networking/Read", "Read: " + data);
+                    if(messageReceivedEvent != null)
+                        messageReceivedEvent.invoke(data);
+                }
             }
-        } catch (IOException | InterruptedException e) {
-            Log.e("Networking", e.getStackTrace().toString());
+        } catch (IOException e) {
+            Log.e("Networking", e.getMessage());
         }
     }
-
-    private String getData() throws IOException {
-        String userInput;
-        while ((userInput = reader.readLine()) != null) {
-            Log.d("Networking", "Fragment: " + userInput);
-        }
-        return userInput;
-    }
-
 
     @Override
     public void dispose() {

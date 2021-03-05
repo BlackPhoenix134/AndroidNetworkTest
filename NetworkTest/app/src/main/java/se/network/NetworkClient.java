@@ -13,44 +13,43 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
+import se.misc.Action;
+
 public class NetworkClient implements Runnable {
     //ToDo: think about pros/cons of exposing this byte[] or string
-    private boolean shouldRun = true;
     private Socket socket;
     private String ip;
     private int port;
+    private Action<String> messageReceivedEvent;
 
     private AsyncWriter toServer;
     private AsyncReader fromServer;
 
-    public NetworkClient(String ip, int port) {
+    public NetworkClient(String ip, int port, Action<String> messageReceivedEvent) {
         this.ip = ip;
         this.port = port;
+        this.messageReceivedEvent = messageReceivedEvent;
     }
 
     @Override
     public void run() {
         try {
             socket = new Socket(ip, port);
-            fromServer = new AsyncReader(socket.getInputStream());
+            fromServer = new AsyncReader(socket.getInputStream(), messageReceivedEvent);
             toServer = new AsyncWriter(socket.getOutputStream());
             new Thread(toServer).start();
             new Thread(fromServer).start();
-            while (shouldRun) //ToDo: fix this mess
-            {
-                Thread.sleep(1000);
-            }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             Log.e("Networking", e.getMessage());
         }
     }
 
     public void sendMessage(String message) {
+        Log.d("Networking/Client", "enqueue message: " + message);
         toServer.enqueueMessage(message);
     }
 
     public void close() {
-        shouldRun = false;
         if (fromServer != null)
             fromServer.dispose();
         if (toServer != null)

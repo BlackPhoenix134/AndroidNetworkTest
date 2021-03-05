@@ -37,8 +37,10 @@ public class MainActivity extends AppCompatActivity {
         setElements();
         createListener();
         try {
-           // client = new NetworkClient("se2-isys.aau.at", 53212);
-            // client = new NetworkClient("localhost", 8080);
+             client = new NetworkClient("se2-isys.aau.at", 53212,
+                     message -> dispatcher.onUi(() -> tvServerResponse.setText(message)));
+
+             dispatcher.dispatch(client);
              //new Thread(client).start();
         } catch (Exception e) {
              Log.e("App", e.getStackTrace().toString());
@@ -46,19 +48,22 @@ public class MainActivity extends AppCompatActivity {
                  client.close();
         }
     }
+
+
     private void setElements() {
-        inStudNr=  findViewById(R.id.inStudNr);
-        tvServerResponse=  findViewById(R.id.tvServerResponse);
+        inStudNr =  findViewById(R.id.inStudNr);
+        tvServerResponse =  findViewById(R.id.tvServerResponse);
     }
 
 
     private void createListener() {
         //ToDo: write dispatcher
         findViewById(R.id.btnSend).setOnClickListener(view -> {
-            SimpleNetworkClient snc = new SimpleNetworkClient("se2-isys.aau.at", 53212, inStudNr.getText().toString());
+           /* SimpleNetworkClient snc = new SimpleNetworkClient("se2-isys.aau.at", 53212, inStudNr.getText().toString());
             snc.setMessageReceivedEvent(message ->
                     dispatcher.onUi(() -> tvServerResponse.setText(message)));
-            dispatcher.dispatch(snc);
+            dispatcher.dispatch(snc);*/
+           client.sendMessage(inStudNr.getText().toString());
         });
 
         findViewById(R.id.btnAction4).setOnClickListener(view -> {

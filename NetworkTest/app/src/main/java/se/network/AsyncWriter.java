@@ -31,11 +31,9 @@ public class AsyncWriter implements Runnable, Disposable {
             while(shouldRun) {
                 if(!packageQueue.isEmpty()) {
                     sendMessage(packageQueue.poll());
-                } else {
-                    Thread.sleep(100);
                 }
             }
-        } catch (InterruptedException | IOException e) {
+        } catch (IOException e) {
             Log.e("Networking", e.getStackTrace().toString());
         }
     }
@@ -47,12 +45,8 @@ public class AsyncWriter implements Runnable, Disposable {
     //ToDo: maybe implement simple network library (package management)
     //      probably good for other proj. if not allowed to use libs
     private void sendMessage(String cmd) throws IOException {
-       /* byte[] ba = cmd.getBytes();
-        byte[] ba0 = new byte[ba.length + 1];
-        System.arraycopy(ba, 0, ba0, 0, ba.length);
-        ba0[ba.length] = 0;*/
-        writer.writeBytes(cmd);
-        Log.d("Networking", "Send: " + cmd);
+        Log.d("Networking", "Sending: " + cmd);
+        writer.writeBytes(cmd + "\n");
     }
 
     @Override
