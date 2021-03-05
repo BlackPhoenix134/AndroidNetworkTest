@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 public class NetworkClient implements Runnable {
     //ToDo: think about pros/cons of exposing this byte[] or string
@@ -39,8 +40,8 @@ public class NetworkClient implements Runnable {
             {
                 Thread.sleep(1000);
             }
-        } catch (IOException | InterruptedException ex) {
-
+        } catch (IOException | InterruptedException e) {
+            Log.e("Networking", e.getMessage());
         }
     }
 
