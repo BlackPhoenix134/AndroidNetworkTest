@@ -37,11 +37,10 @@ public class MainActivity extends AppCompatActivity {
         setElements();
         createListener();
         try {
-             client = new NetworkClient("se2-isys.aau.at", 53212,
+             /*client = new NetworkClient("se2-isys.aau.at", 53212,
                      message -> dispatcher.onUi(() -> tvServerResponse.setText(message)));
 
-             dispatcher.dispatch(client);
-             //new Thread(client).start();
+             dispatcher.dispatch(client);*/
         } catch (Exception e) {
              Log.e("App", e.getStackTrace().toString());
              if(client != null)
@@ -59,11 +58,11 @@ public class MainActivity extends AppCompatActivity {
     private void createListener() {
         //ToDo: write dispatcher
         findViewById(R.id.btnSend).setOnClickListener(view -> {
-           /* SimpleNetworkClient snc = new SimpleNetworkClient("se2-isys.aau.at", 53212, inStudNr.getText().toString());
+          SimpleNetworkClient snc = new SimpleNetworkClient("se2-isys.aau.at", 53212, inStudNr.getText().toString());
             snc.setMessageReceivedEvent(message ->
                     dispatcher.onUi(() -> tvServerResponse.setText(message)));
-            dispatcher.dispatch(snc);*/
-           client.sendMessage(inStudNr.getText().toString());
+            dispatcher.dispatch(snc);
+           //client.sendMessage(inStudNr.getText().toString());
         });
 
         findViewById(R.id.btnAction4).setOnClickListener(view -> {

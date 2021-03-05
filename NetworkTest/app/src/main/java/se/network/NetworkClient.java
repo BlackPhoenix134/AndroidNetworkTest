@@ -17,6 +17,7 @@ import se.misc.Action;
 
 public class NetworkClient implements Runnable {
     //ToDo: think about pros/cons of exposing this byte[] or string
+    //ToDo: better async implementation
     private Socket socket;
     private String ip;
     private int port;

@@ -34,7 +34,7 @@ public class AsyncWriter implements Runnable, Disposable {
                 }
             }
         } catch (IOException e) {
-            Log.e("Networking", e.getStackTrace().toString());
+            Log.e("Networking", e.getMessage());
         }
     }
 
