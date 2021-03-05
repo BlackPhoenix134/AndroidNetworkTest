@@ -33,7 +33,9 @@ public class SimpleNetworkClient extends Thread {
         this.messageReceivedEvent = onMessageReceived;
     }
 
-
+    public void setMessageReceivedEvent(Action<String> messageReceivedEvent) {
+        this.messageReceivedEvent = messageReceivedEvent;
+    }
 
     @Override
     public void run() {

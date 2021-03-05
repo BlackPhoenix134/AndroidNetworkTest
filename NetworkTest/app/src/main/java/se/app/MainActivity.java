@@ -17,16 +17,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import se.concurrent.Dispatcher;
 import se.misc.Action;
+import se.misc.Disposable;
 import se.network.NetworkClient;
 import se.network.SimpleNetworkClient;
 
 public class MainActivity extends AppCompatActivity {
-    private MainActivity thisActivity = this;
-    EditText inStudNr;
-    TextView tvServerResponse;
+    private TextView tvServerResponse;
+    private EditText inStudNr;
+    private NetworkClient client = null;
+    private Dispatcher dispatcher = new Dispatcher(this);
 
-    NetworkClient client = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,20 +45,20 @@ public class MainActivity extends AppCompatActivity {
              if(client != null)
                  client.close();
         }
-
     }
     private void setElements() {
         inStudNr=  findViewById(R.id.inStudNr);
         tvServerResponse=  findViewById(R.id.tvServerResponse);
     }
+
+
     private void createListener() {
         //ToDo: write dispatcher
         findViewById(R.id.btnSend).setOnClickListener(view -> {
-             SimpleNetworkClient snc = new SimpleNetworkClient("se2-isys.aau.at", 53212, inStudNr.getText().toString(),
-                     message -> thisActivity.runOnUiThread(() -> {
-                         tvServerResponse.setText(message);
-                     }));
-             snc.start();
+            SimpleNetworkClient snc = new SimpleNetworkClient("se2-isys.aau.at", 53212, inStudNr.getText().toString());
+            snc.setMessageReceivedEvent(message ->
+                    dispatcher.onUi(() -> tvServerResponse.setText(message)));
+            dispatcher.dispatch(snc);
         });
 
         findViewById(R.id.btnAction4).setOnClickListener(view -> {
@@ -66,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
             tvServerResponse.setText(Arrays.toString(filtered.toArray()));
         });
     }
-
     private List<Character> filterPrimes(char[] chars) {
         List<Character> retVal = new ArrayList<>();
         for(char c : chars) {
